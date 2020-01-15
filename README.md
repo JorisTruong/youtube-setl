@@ -11,21 +11,37 @@ The goal of this project is to find the 100 most "popular" videos, the most "pop
 
 ## Difficult
 
-<details>
-  <summary>Instructions</summary>
+### Instructions
+
+* <details>
+  <summary>Achievement 1</summary>
   
-<p>
-You are on your own ! Do whatever you please in order to achieve the tasks.
-</p>
+  * You are on your own ! Do whatever you please in order to achieve the tasks.
+
 </details>
 
 
 ## Medium
 
+### Instructions
 
+* <details>
+  <summary>Achievement 1</summary>
+  
+  *
+
+</details>
 
 ## Easy
 
+### Instructions
+
+* <details>
+  <summary>Achievement 1</summary>
+
+  *
+
+</details>
 
 
 ### Thanks for reading ! :heart:
