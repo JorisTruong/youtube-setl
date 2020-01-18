@@ -1,6 +1,7 @@
 package com.github.joristruong.entity
 
-import java.sql.Timestamp
+import java.sql.Date
+
 import com.jcdecaux.setl.annotation.ColumnName
 
 case class Video(
@@ -8,12 +9,11 @@ case class Video(
                   title: String,
                   @ColumnName("channel_title") channelTitle: String,
                   @ColumnName("category_id") categoryId: String,
-                  @ColumnName("publish_time") publishTime: Timestamp,
+                  @ColumnName("trending_date") trendingDate: Date,
                   views: Long,
                   likes: Long,
                   dislikes: Long,
                   @ColumnName("comment_count") commentCount: Long,
                   @ColumnName("comments_disabled") commentDisabled: Boolean,
-                  @ColumnName("ratings_disabled") ratingsDisabled: Boolean,
-                  @ColumnName("video_error_or_removed") inUse: Boolean
+                  @ColumnName("video_error_or_removed") removed: Boolean
                 )
