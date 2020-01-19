@@ -22,6 +22,7 @@ class AddCountryFactory(
     transformedData = videosRepo
         .findAll()
         .filter(video => !video.removed)
+        .drop("removed")
         .withColumn("country", lit(country))
         .as[VideoCountry]
 

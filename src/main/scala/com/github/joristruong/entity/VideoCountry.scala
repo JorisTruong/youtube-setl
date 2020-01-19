@@ -15,6 +15,5 @@ case class VideoCountry(
                          dislikes: Long,
                          @ColumnName("comment_count") commentCount: Long,
                          @ColumnName("comments_disabled") commentDisabled: Boolean,
-                         @ColumnName("video_error_or_removed") removed: Boolean,
                          country: String
                        )
