@@ -25,6 +25,7 @@ class AddCountryFactory(
         .drop("removed")
         .withColumn("country", lit(country))
         .as[VideoCountry]
+        .distinct()
 
     this
   }
