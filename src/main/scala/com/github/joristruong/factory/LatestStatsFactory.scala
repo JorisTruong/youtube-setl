@@ -1,6 +1,7 @@
 package com.github.joristruong.factory
 
 import com.github.joristruong.entity.{Video, VideoCountry, VideoStats}
+import com.github.joristruong.transformer.StatsTransformer
 import com.jcdecaux.setl.annotation.Delivery
 import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
@@ -29,25 +30,7 @@ class LatestStatsFactory extends Factory[Dataset[VideoStats]] with HasSparkSessi
   }
 
   override def process(): LatestStatsFactory.this.type = {
-    val w = Window
-      .partitionBy(
-        "videoId",
-        "title",
-        "channelTitle",
-        "categoryId",
-        "commentDisabled",
-        "country"
-      )
-
-    val w2 = w.orderBy($"trendingDate".desc)
-
-    output = videos
-      .withColumn("trendingDays", count($"videoId").over(w).cast("int"))
-      .withColumn("rank", rank().over(w2))
-      .filter(row => row.getAs[Int]("rank") == 1)
-      .drop("rank")
-      .sort($"country", $"trendingDays".desc, $"views".desc, $"likes".desc)
-      .as[VideoStats]
+    output = new StatsTransformer(videos).transform().transformed
 
     this
   }
