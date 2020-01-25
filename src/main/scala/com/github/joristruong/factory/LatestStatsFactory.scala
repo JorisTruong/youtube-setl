@@ -1,17 +1,13 @@
 package com.github.joristruong.factory
 
-import com.github.joristruong.entity.{Video, VideoCountry, VideoStats}
+import com.github.joristruong.entity.{VideoCountry, VideoStats}
 import com.github.joristruong.transformer.StatsTransformer
 import com.jcdecaux.setl.annotation.Delivery
 import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
-import com.jcdecaux.setl.util.HasSparkSession
-import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.Dataset
-import org.apache.spark.sql.functions._
 
-class LatestStatsFactory extends Factory[Dataset[VideoStats]] with HasSparkSession {
-  import spark.implicits._
+class LatestStatsFactory extends Factory[Dataset[VideoStats]] {
 
   @Delivery(id = "videosRepo")
   var videosRepo: SparkRepository[VideoCountry] = _
