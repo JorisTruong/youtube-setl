@@ -16,5 +16,5 @@ case class VideoStats(
                        @ColumnName("comment_count") commentCount: Long,
                        @ColumnName("comments_disabled") commentDisabled: Boolean,
                        country: String,
-                       trendingDays: Int
+                       @ColumnName("trending_days") trendingDays: Int
                      )
