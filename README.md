@@ -60,9 +60,9 @@ For this project, we assume that you already have a basic knowledge of Scala and
 * <details>
   <summary>Achievement 1: <b>Reading inputs</b></summary>
   
-  The first thing we are going to do is, of course, reading the inputs: the CSV files, that I will call the videos files, and the JSON files, or the categories files.
+  The first thing we are going to do is, of course, reading the inputs: the CSV files, that I will call the videos files, and the JSON files, the categories files.
 
-  1. Let's start with the categories files. All the categories files are *JSON* files. Create a case class that represents a *Category*, then a Factory with a Transformer to will process the categories files into the case class.
+  1. Let's start with the categories files. All the categories files are *JSON* files. Create a case class that represents a *Category*, then a Factory with a Transformer that will process the categories files into the case class.
         <details>
         <summary>Tips:</summary>
 
@@ -151,7 +151,72 @@ For this project, we assume that you already have a basic knowledge of Scala and
 * <details>
   <summary>Achievement 1: <b>Reading inputs</b></summary>
 
-  *
+  The first thing we are going to do is, of course, reading the inputs: the CSV files, that I will call the videos files, and the JSON files, the categories files.
+
+  1. Let's start with the categories files. All the categories files are JSON files. Here is the workflow: we are going to define a configuration file that will indicates the categories files to read ; create a case class that represents a Category ; then a Factory with a Transformer that will process the categories files into the case class. Finally, we are going to add the ```Stage``` into the ```Pipeline``` to trigger the transformations.
+      
+        1. <details>
+            <summary>Configuration</summary>
+
+            The configuration object has already been created in ```resources/local.conf```. Pay attention at the ```storage``` and ```path``` options. Move the categories files accordingly. If multiple files are in the same folder and the folder is used as a path, *SETL* will consider the files as partitions of a single file.
+
+            </details>
+
+        2. <details>
+            <summary>Entity</summary>
+
+            Create a case class named ```Category``` in the ```entity``` folder. Now examine, in the categories files, the fields that we will need.
+
+            <details>
+            <summary>Answer</summary>
+
+            We will need the ```id``` and the ```title``` of the category.
+
+            </details>
+
+            </details>
+
+        3. <details>
+            <summary>Factory</summary>
+
+             The skeleton of the Factory has already been provided. Make sure you understand the logical structure.
+             * First, a ```Delivery``` in the form of a ```Connector``` allows us to retrieve the inputs. Another ```Delivery``` will act as a ```SparkRepository```, where we will write the output of the transformation. To connect with the two previous deliveries, we are going to use to other variables: one for reading the ```Connector```, and the other for storing the output.
+             * Four functions are needed for a SETL ```Factory```:
+                  * ```read```: the idea is to take the ```Connector``` or ```SparkRepository Delivery``` inputs, preprocess them if needed, and store them into variables to use them in the next function.
+                  * ```process```: here is where all the data transformations will be done.
+                  * ```write```: as its name suggests, it is used to save the output of the transformations after they have been done.
+                  * ```get```: this function is used to pass the output into the next ```Stage``` of the ```Pipeline```.
+            * In the ```process``` function, there can be multiple ```Transformer```. We are going to try to follow this structure throughout the rest of the project.
+
+            <br>
+            <details>
+            <summary>Questions</summary>
+
+            * <b>Why use a Connector instead of a SparkRepository ?</b><br>
+            This is mostly because it is hard to create an object that will mimic the categories files, structure-wise.
+            * <b>Why do you have to write the output ?</b><br>
+            It is absolutely not necessary. Indeed, the result of the ```Factory``` will be automatically transferred to the next ```Stage``` through the ```get``` function. However, writing the output of every ```Factory``` will be easier for visualization and debugging.
+
+            </details>
+
+            </details>
+
+        4. <details>
+            <summary>Transformer</summary>
+
+            Again, the skeleton of the Transformer has already been provided. However, you will be the one who will write the data transformation.
+            * Our ```Transformer``` takes an argument. Usually, it is the DataFrame or the Dataset that we want to process. Depending on your application, you may add other arguments.
+            * ```transformedData``` is the variable that will store the result of the data transformation.
+            * ```transformed()``` is the method that will be called by a ```Factory``` to retrieve the result of the data transformation.
+            * ```transform()``` is the method that will do the data transformations.
+            * Let's now describe the transformation we want to do.
+                1. First off, we are going to select the ```items``` field. If you check out the categories files, the information we need is on this field.
+                2. However, the ```items``` field is an array. We want to explode this array and take only the ```id``` field and the ```title``` field from the ```snippet``` field. To do that, use the ```explode``` function from ```org.apache.spark.sql.functions```. Then, to get specific fields, use the ```withColumn``` method and the ```getField()``` method on ```id, snippet``` and ```title```. Don't forget to cast the types accordingly to the case class that you created.
+                3. Select the ```id``` and the ```title``` columns. Then, cast the DataFrame into a Dataset with ```as[T]```.
+            * You have finished writing the ```Transformer```. To see what it does, you can run the ```App.scala``` file that has already been created. It simply runs the ```Factory``` that contains the ```Transformer``` you just wrote, and it will output the result to the path of the configuration file.
+
+            </details>
+  
 
 </details>
 
