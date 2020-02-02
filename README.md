@@ -28,7 +28,7 @@ This definition is clearly debatable and arbitrary, and we are not looking to fi
 
 # Introduction
 
-The goal of this project is to find the 100 most "popular" videos, and the most "popular" video categories.
+The goal of this project is to find the 100 most "popular" videos, and the most "popular" video categories. But how do we defined the popularity of a video ? The formula is going to be: <br>```number of views * views weight + number of trending days * trending days weight + normalized likes percentage * likes weight + normalized comments * comments weight```. <br> The likes percentage is the ratio of likes over dislikes, and we normalize this ratio and the number of comments over the number of views.
 
 Below are the instructions for each difficulty level to realize the project. For each difficulty level, you can clone the repo with the specific branch to have a starting project.
 
@@ -39,7 +39,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
 * Create a folder *inputs* in the *resources* folder and move the data here.
 * The global structure of the project consists in 3 main folders: ```entity``` which contains the case classes or the objects ; ```factory``` which contains transformers ; and ```transformer``` which contains the data transformations.
 * Try to save all the DataFrame/Dataset after each transformation, or data processing. You can have a look at them to see if there are any mistakes.
-* For accomplish the tasks, you can look at *Tips* for help.
+* To accomplish the tasks, you can look at *Tips* for help.
 
 ## Hard mode
 
@@ -125,7 +125,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
 
   1. Let's normalize the number of likes/dislikes over the number of views. For each record, divide the number of likes by the number of views, and then the number of dislikes by the number of views. After that, get the percentage of "normalized" likes.
   2. Let's now normalize the number of comments. For each record, divide the number of comments by the number of views.
-  3. We can now compute the popularity score. The formula is going to be: ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * likesWeight + normalizedComments * commentsWeight```. <br>
+  3. We can now compute the popularity score. Remind that the formula is: ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * likesWeight + normalizedComments * commentsWeight```. <br>
   However, there are videos where comments are disabled. In this case, the formula becomes: ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * (likesWeight + commentsWeight)```. We arbitrarily decided the weights to be:
         * ```viewsWeight = 0.4```
         * ```trendingDaysWeight = 0.35```
@@ -217,6 +217,85 @@ For this project, we assume that you already have a basic knowledge of Scala and
 
             </details>
   
+  2. Let's now process the videos files. We would like to merge all the files in a single DataFrame/Dataset or in the same CSV file, while keeping the information of the region for each video. All videos files are CSV files and they have the same columns, as previously stated in the **Context** section. The workflow is similar to the last one:  configuration ; case class ; Factory ; Transformer ; add the Stage into the Pipeline. This time, we are going to set multiple configuration objects.
+
+        1. <details>
+            <summary>Configuration</summary>
+
+            We are going to set multiple configuration objects in ```resources/local.conf```, one per region. In each configuration object, you will have to set ```storage, path, inferSchema, delimiter, header, multiLine``` and ```dateFormat```.
+
+            <details>
+            <summary>Tips</summary>
+
+            * For these configuration files, try to give a generic name, like ```videos<region>Repository```.
+            * Do not forget to set a configuration object for writing the output of the ```Factory```.
+
+            </details>
+
+            <details>
+            <summary>Questions</summary>
+
+            * <b>Why do we have to set multiple configuration objects, and not use a single object and move all the files in the same folder, similar to the categories files ?</b><br>
+            This is because we need to keep the region information. For each of the region videos files, we will have to add a column containing the region. If we used a single object and treated all the files as partitions of a single file, we would not be able to write different regions.
+
+            </details>
+            
+        2. <details>
+            <summary>Entity</summary>
+
+            Create a case class named ```Video``` in the ```entity``` folder. Now examine, in the videos files, the fields that we will need. Remind that the objective is to compute the popularity score, and that the formula is ```number of views * views weight + number of trending days * trending days weight + normalized likes percentage * likes weight + normalized comments * comments weight```. It will help to select the fields.
+
+            Create another case class named ```VideoCountry```. It will have exactly the same fields as ```Video```, but with the country/region field in addition.
+
+            <details>
+            <summary>Tips</summary>
+
+            * You can look at ```@ColumnName``` annotation of the framework. Try to use it as it can be useful in some  real-life business situations.
+
+            </details>
+            <details>
+            <summary>Answer</summary>
+
+            We would like to have the ```videoId```, ```title```, ```channel_title```, ```category_id```, ```trending_date```, ```views```, ```likes```, ```dislikes```, ```comment_count```, ```comments_disabled``` and ```video_error_or_removed``` fields.
+
+            </details>
+
+            </details>
+
+        3. <details>
+            <summary>Factory</summary>
+
+             The goal of this factory is to merge all the videos files into a single one, without removing the region information. That means that we are going to use two kind ```Transformer```.
+             * First of all, set all the inputs ```Delivery``` in the form of a ```SparkRepository[Video]```. Set a last ```Delivery``` as a ```SparkRepository[VideoCountry]```, where we will write the output of the transformation. Set as many variables ```Dataset[Video]``` as the number of inputs.
+             * Let's now describe the four functions of the ```Factory```:
+                  * ```read```: preprocess the ```SparkRepository``` by filtering the videos that are _removed_ or _error_. Then, "cast" them as ```Dataset[Video]``` and store them into the corresponding variables.
+                  * ```process```: Apply the first ```Transformer``` for each of the inputs, and apply the results to the second ```Transformer```.
+                  * ```write```: write the output ```SparkRepository[VideoCountry]```.
+                  * ```get```: just return the result of the final ```Transformer```
+
+            <br>
+            <details>
+            <summary>Questions</summary>
+
+            * **Why didn't we use a ```Connector``` to read the input files and a ```SparkRepository``` for the output ?**<br>
+            You can totally do that ! Feel free to do that if you prefer this way. We used ```SparkRepository``` to read the inputs just to provide a structure for the input files.
+            * **I feel like there is a lot of ```SparkRepository``` and a lot of corresponding variables, and I don't find this pretty/consise. Isn't there another solution ?**<br>
+            To try: ```Autoload```
+
+            </details>
+
+            </details>
+
+        4. <details>
+            <summary>Transformer</summary>
+
+            1. 
+
+            2. 
+
+            </details>
+
+            </details>
 
 </details>
 
