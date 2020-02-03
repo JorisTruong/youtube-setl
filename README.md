@@ -280,7 +280,18 @@ For this project, we assume that you already have a basic knowledge of Scala and
             * **Why didn't we use a ```Connector``` to read the input files and a ```SparkRepository``` for the output ?**<br>
             You can totally do that ! Feel free to do that if you prefer this way. We used ```SparkRepository``` to read the inputs just to provide a structure for the input files.
             * **I feel like there is a lot of ```SparkRepository``` and a lot of corresponding variables, and I don't find this pretty/consise. Isn't there another solution ?**<br>
-            To try: ```Autoload```
+            Instead of using ```Delivery``` in the form of a ```SparkRepository```, you can use deliveries in the form of a ```Dataset``` with ```autoLoad = true``` option. So, instead of having:
+                ```
+                @Delivery(id = "id")
+                var videosRegionRepo: SparkRepository[Video] = _
+                var videosRegion: Dataset[Video]
+                ```
+                you can use:
+                ```
+                @Delivery(id = "id", autoLoad = true)
+                var videosRegion: Dataset[Video]
+                ```
+                Do not hesitate the check the wiki of SETL, in the Annotation section.
 
             </details>
 
@@ -289,9 +300,16 @@ For this project, we assume that you already have a basic knowledge of Scala and
         4. <details>
             <summary>Transformer</summary>
 
-            1. 
+            1. The main goal of the first ```Transformer``` is to add the region/country information. Build a ```Transformer``` that takes two inputs, a ```Dataset[Video]``` and a string. Add the column ```country``` and return a ```Dataset[VideoCountry]```. You can also filter the videos that are labeled as *removed or error*. Of course, this last step can be placed elsewhere.
 
-            2. 
+            2. The main goal of the second ```Transformer``` is to regroup all the videos together, while keeping the region information.
+
+                <details>
+                <summary>Tips</summary>
+
+                * Use ```reduce``` and ```union``` functions.
+
+                </details>
 
             </details>
 
