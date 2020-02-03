@@ -5,12 +5,9 @@ import com.github.joristruong.transformer.videofactorytransformer.{AddCountryFac
 import com.jcdecaux.setl.annotation.Delivery
 import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
-import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 
-class VideoFactory extends Factory[Dataset[VideoCountry]] with HasSparkSession {
-  import spark.implicits._
-
+class VideoFactory extends Factory[Dataset[VideoCountry]] {
   @Delivery(id = "videosCARepo")
   var videosCARepo: SparkRepository[Video] = _
   @Delivery(id = "videosDERepo")
@@ -34,23 +31,47 @@ class VideoFactory extends Factory[Dataset[VideoCountry]] with HasSparkSession {
   @Delivery(id = "videosRepo")
   var videosCountryRepo: SparkRepository[VideoCountry] = _
 
+  var videosCAFull: Dataset[Video] = _
+  var videosDEFull: Dataset[Video] = _
+  var videosFRFull: Dataset[Video] = _
+  var videosGBFull: Dataset[Video] = _
+  var videosINFull: Dataset[Video] = _
+  var videosJPFull: Dataset[Video] = _
+  var videosKRFull: Dataset[Video] = _
+  var videosMXFull: Dataset[Video] = _
+  var videosRUFull: Dataset[Video] = _
+  var videosUSFull: Dataset[Video] = _
+
   var videos: Dataset[Video] = _
 
   var output: Dataset[VideoCountry] = _
 
-  override def read(): VideoFactory.this.type = this
+  override def read(): VideoFactory.this.type = {
+    videosCAFull = videosCARepo.findAll()
+    videosDEFull = videosDERepo.findAll()
+    videosFRFull = videosFRRepo.findAll()
+    videosGBFull = videosGBRepo.findAll()
+    videosINFull = videosINRepo.findAll()
+    videosJPFull = videosJPRepo.findAll()
+    videosKRFull = videosKRRepo.findAll()
+    videosMXFull = videosMXRepo.findAll()
+    videosRUFull = videosRURepo.findAll()
+    videosUSFull = videosUSRepo.findAll()
+
+    this
+  }
 
   override def process(): VideoFactory.this.type = {
-    val videosCA = new AddCountryFactory(videosCARepo, "CA").transform().transformed
-    val videosDE = new AddCountryFactory(videosDERepo, "DE").transform().transformed
-    val videosFR = new AddCountryFactory(videosFRRepo, "FR").transform().transformed
-    val videosGB = new AddCountryFactory(videosGBRepo, "GB").transform().transformed
-    val videosIN = new AddCountryFactory(videosINRepo, "IN").transform().transformed
-    val videosJP = new AddCountryFactory(videosJPRepo, "JP").transform().transformed
-    val videosKR = new AddCountryFactory(videosKRRepo, "KR").transform().transformed
-    val videosMX = new AddCountryFactory(videosMXRepo, "MX").transform().transformed
-    val videosRU = new AddCountryFactory(videosRURepo, "RU").transform().transformed
-    val videosUS = new AddCountryFactory(videosUSRepo, "US").transform().transformed
+    val videosCA = new AddCountryFactory(videosCAFull, "CA").transform().transformed
+    val videosDE = new AddCountryFactory(videosDEFull, "DE").transform().transformed
+    val videosFR = new AddCountryFactory(videosFRFull, "FR").transform().transformed
+    val videosGB = new AddCountryFactory(videosGBFull, "GB").transform().transformed
+    val videosIN = new AddCountryFactory(videosINFull, "IN").transform().transformed
+    val videosJP = new AddCountryFactory(videosJPFull, "JP").transform().transformed
+    val videosKR = new AddCountryFactory(videosKRFull, "KR").transform().transformed
+    val videosMX = new AddCountryFactory(videosMXFull, "MX").transform().transformed
+    val videosRU = new AddCountryFactory(videosRUFull, "RU").transform().transformed
+    val videosUS = new AddCountryFactory(videosUSFull, "US").transform().transformed
 
     val allVideos = Seq(
       videosCA,
