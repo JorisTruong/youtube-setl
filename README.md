@@ -40,6 +40,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
 * The global structure of the project consists in 3 main folders: ```entity``` which contains the case classes or the objects ; ```factory``` which contains transformers ; and ```transformer``` which contains the data transformations.
 * Try to save all the DataFrame/Dataset after each transformation, or data processing. You can have a look at them to see if there are any mistakes.
 * To accomplish the tasks, you can look at *Tips* for help.
+* If you use IntelliJ IDEA, when you create a _SETL_ ```Factory``` or ```Transformer```, you can use ```Ctrl+i``` to automatically create the needed functions. 
 
 ## Hard mode
 
@@ -62,7 +63,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
   
   The first thing we are going to do is, of course, reading the inputs: the CSV files, that I will call the videos files, and the JSON files, the categories files.
 
-  1. Let's start with the categories files. All the categories files are *JSON* files. Create a case class that represents a *Category*, then a Factory with a Transformer that will process the categories files into the case class.
+  1. Let's start with the categories files. All the categories files are *JSON* files. Create a case class that represents a *Category*, then a ```Factory``` with a ```Transformer``` that will process the categories files into the case class.
         <details>
         <summary>Tips:</summary>
 
@@ -75,7 +76,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
 
         </details>
 
-  2. We can now work with the videos files. Similarly, create a case class that represents a *Video* for reading the inputs, then a Factory with one or several Transformers that will do the processing. Because the videos files are separated from regions, there is not the region information for each record in the dataset. Try to add this information by using another case class *VideoCountry* which is very similar to *Video*, and merge all the records in a single DataFrame/Dataset.
+  2. We can now work with the videos files. Similarly, create a case class that represents a *Video* for reading the inputs, then a ```Factory``` with one or several ```Transformers``` that will do the processing. Because the videos files are separated from regions, there is not the region information for each record in the dataset. Try to add this information by using another case class *VideoCountry* which is very similar to *Video*, and merge all the records in a single DataFrame/Dataset.
 
         <details>
         <summary>Tips:</summary>
@@ -83,7 +84,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
         * Read the files one by one. It means to create multiple **SparkRepository** for reading.
         * Create a single **SparkRepository** for writing.
         * Select videos that are not removed or having an error.
-        * Two Transformers will be useful: one for adding the ```country``` column, and one for merging all the videos into a single Dataset.
+        * Two ```Transformers``` will be useful: one for adding the ```country``` column, and one for merging all the videos into a single Dataset.
 
         </details>
 
@@ -153,7 +154,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
 
   The first thing we are going to do is, of course, reading the inputs: the CSV files, that I will call the videos files, and the JSON files, the categories files.
 
-  1. Let's start with the categories files. All the categories files are JSON files. Here is the workflow: we are going to define a configuration file that will indicates the categories files to read ; create a case class that represents a Category ; then a Factory with a Transformer that will process the categories files into the case class. Finally, we are going to add the ```Stage``` into the ```Pipeline``` to trigger the transformations.
+  1. Let's start with the categories files. All the categories files are JSON files. Here is the workflow: we are going to define a configuration file that will indicates the categories files to read ; create a case class that represents a Category ; then a ```Factory``` with a ```Transformer``` that will process the categories files into the case class. Finally, we are going to add the ```Stage``` into the ```Pipeline``` to trigger the transformations.
       
         1. <details>
             <summary>Configuration</summary>
@@ -179,7 +180,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
         3. <details>
             <summary>Factory</summary>
 
-             The skeleton of the Factory has already been provided. Make sure you understand the logical structure.
+             The skeleton of the ```Factory``` has already been provided. Make sure you understand the logical structure.
              * First, a ```Delivery``` in the form of a ```Connector``` allows us to retrieve the inputs. Another ```Delivery``` will act as a ```SparkRepository```, where we will write the output of the transformation. To connect with the two previous deliveries, we are going to use to other variables: one for reading the ```Connector```, and the other for storing the output.
              * Four functions are needed for a SETL ```Factory```:
                   * ```read```: the idea is to take the ```Connector``` or ```SparkRepository Delivery``` inputs, preprocess them if needed, and store them into variables to use them in the next function.
@@ -204,7 +205,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
         4. <details>
             <summary>Transformer</summary>
 
-            Again, the skeleton of the Transformer has already been provided. However, you will be the one who will write the data transformation.
+            Again, the skeleton of the ```Transformer``` has already been provided. However, you will be the one who will write the data transformation.
             * Our ```Transformer``` takes an argument. Usually, it is the DataFrame or the Dataset that we want to process. Depending on your application, you may add other arguments.
             * ```transformedData``` is the variable that will store the result of the data transformation.
             * ```transformed()``` is the method that will be called by a ```Factory``` to retrieve the result of the data transformation.
@@ -216,8 +217,21 @@ For this project, we assume that you already have a basic knowledge of Scala and
             * You have finished writing the ```Transformer```. To see what it does, you can run the ```App.scala``` file that has already been created. It simply runs the ```Factory``` that contains the ```Transformer``` you just wrote, and it will output the result to the path of the configuration file.
 
             </details>
+    
+    <br>
+    <details>
+    <summary>What you should know by now</summary>
+
+    * The general structure: config, entity, transformer, factory, and finally stage in the pipeline.
+    * Read JSON files.
+    * How to read inputs: creating a configuration object, setting up a ```Connector```, using the ```@Delivery``` annotation.
+    * _SETL_ can to read partitions by setting a folder path in the configuration object.
+    * Where to process data: using ```Transformer``` in the ```process``` method of a ```Factory```.
+    * How to write output: with the ```write``` method of a ```Factory```.
+
+    </details>
   
-  2. Let's now process the videos files. We would like to merge all the files in a single DataFrame/Dataset or in the same CSV file, while keeping the information of the region for each video. All videos files are CSV files and they have the same columns, as previously stated in the **Context** section. The workflow is similar to the last one:  configuration ; case class ; Factory ; Transformer ; add the Stage into the Pipeline. This time, we are going to set multiple configuration objects.
+  2. Let's now process the videos files. We would like to merge all the files in a single DataFrame/Dataset or in the same CSV file, while keeping the information of the region for each video. All videos files are CSV files and they have the same columns, as previously stated in the **Context** section. The workflow is similar to the last one:  configuration ; case class ; ```Factory``` ; ```Transformer``` ; add the ```Stage``` into the ```Pipeline```. This time, we are going to set multiple configuration objects.
 
         1. <details>
             <summary>Configuration</summary>
@@ -251,6 +265,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
             <summary>Tips</summary>
 
             * You can look at ```@ColumnName``` annotation of the framework. Try to use it as it can be useful in some  real-life business situations.
+            * Use ```java.sql.Date``` for a date type field.
 
             </details>
             <details>
@@ -313,21 +328,108 @@ For this project, we assume that you already have a basic knowledge of Scala and
 
             </details>
 
-            </details>
+    <br>
+    <details>
+    <summary>What you should know by now</summary>
+
+    * Read CSV files.
+    * Use both ```Connector``` and ```SparkRepository```.
+    * Read multiple ```Deliveries``` into a ```Transformer``` or a ```Connector```.
+    * Use multiple ```Transformer``` in a ```Factory```.
+
+    </details>
+
+    </details>
 
 </details>
 
 * <details>
   <summary>Achievement 2: <b>Getting the latest videos statistics</b></summary>
+
+  Because a video can be a top trending one for a day and the next day, it will have different numbers in terms of views, likes, dislikes, comments... As a consequence, we have to retrieve the latest statistics available for a single video, for each region. At the same time, we are going to compute the number of trending days for every video.
+
+  But how are we going to do that ? First of all, we are going to group the records that correspond to the same video, and count the number of records, which is basically the number of trending days. Then, we are going to rank these grouped records and take the latest one, to retrieve the latest statistics.
   
-  *
+  1. <details>
+        <summary>Configuration</summary>
+
+        Set the configuration file to retrieve the output the ```VideoFactory```. You will need to read it and process it to get the latest videos statistics.
+
+        <details>
+        <summary>Tips</summary>
+
+        * Do not forget to set a configuration object for writing the output of the ```Factory```.
+
+        </details>
+
+        </details>
+        
+  2. <details>
+        <summary>Entity</summary>
+
+        Create an case class named ```VideoStats``` which have similar fields than ```VideoCountry```, but you need to take into account the number of trending days.
+
+        </details>
+
+  3. <details>
+        <summary>Factory</summary>
+
+        In this factory, all you need to do is to read the input, pass it to the ```Transformer``` that will do the data processing, and write the output. It should be pretty simple ; you can try to imitate the other ```Factories```.
+
+        </details>
+
+  4. <details>
+        <summary>Transformer</summary>
+
+        As previously said, we are going to group the videos together. For that, we are going to use ```org.apache.spark.sql.expressions.Window```. Make sure you know what a ```Window``` does beforehand.
+
+        1. Create a first ```Window``` that you will partition by for counting the number of trending days for each video. To know which fields you are going to partition by, look at what fields will be the same for a single video.
+        2. Create a second ```Window``` that will be used for ranking the videos by their trending date. By selecting the most recent date, we can retrieve the latest statistics of each video.
+        3. After creating the two ```Windows```, you now can add new columns ```trendingDays``` for the number of trending days and ```rank``` for the ranking of the trending date by descending order.
+        4. To get the most recent statistics, just filter the videos by their ```rank```, taking only the records with the ```rank``` 1.
+
+        <br>
+        <details>
+        <summary>Tips</summary>
+
+        * You will need to use ```partitionBy``` and ```orderBy``` methods for the ```Window``` ; and the ```count```, ```rank``` methods from ```org.apache.spark.sql.functions``` when working with the ```Dataset```.
+
+        </details>
+
+        </details>
 
 </details>
 
 * <details>
   <summary>Achievement 3: <b>Computing the popularity score</b></summary>
   
-  *
+  1. <details>
+        <summary>Configuration</summary>
+
+
+
+        </details>
+        
+  2. <details>
+        <summary>Entity</summary>
+
+        
+
+        </details>
+
+  3. <details>
+        <summary>Factory</summary>
+
+        
+
+        </details>
+
+  4. <details>
+        <summary>Transformer</summary>
+
+        
+
+        </details>
 
 </details>
 
