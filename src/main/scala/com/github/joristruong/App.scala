@@ -1,7 +1,7 @@
 package com.github.joristruong
 
 import com.github.joristruong.entity.{Video, VideoCountry, VideoStats}
-import com.github.joristruong.factory.{LatestStatsFactory, PopularityScoreFactory, VideoFactory}
+import com.github.joristruong.factory.{LatestStatsFactory, PopularityScoreFactory, VideoIngestionFactory}
 import com.jcdecaux.setl.Setl
 
 object App {
@@ -14,16 +14,16 @@ object App {
 
     // Register Repositories
     setl
-      .setSparkRepository[Video]("videosCARepository", deliveryId = "videosCARepo")
-      .setSparkRepository[Video]("videosDERepository", deliveryId = "videosDERepo")
-      .setSparkRepository[Video]("videosFRRepository", deliveryId = "videosFRRepo")
-      .setSparkRepository[Video]("videosGBRepository", deliveryId = "videosGBRepo")
-      .setSparkRepository[Video]("videosINRepository", deliveryId = "videosINRepo")
-      .setSparkRepository[Video]("videosJPRepository", deliveryId = "videosJPRepo")
-      .setSparkRepository[Video]("videosKRRepository", deliveryId = "videosKRRepo")
-      .setSparkRepository[Video]("videosMXRepository", deliveryId = "videosMXRepo")
-      .setSparkRepository[Video]("videosRURepository", deliveryId = "videosRURepo")
-      .setSparkRepository[Video]("videosUSRepository", deliveryId = "videosUSRepo")
+      .setSparkRepository[Video]("videosCARepository", deliveryId = "videosCA")
+      .setSparkRepository[Video]("videosDERepository", deliveryId = "videosDE")
+      .setSparkRepository[Video]("videosFRRepository", deliveryId = "videosFR")
+      .setSparkRepository[Video]("videosGBRepository", deliveryId = "videosGB")
+      .setSparkRepository[Video]("videosINRepository", deliveryId = "videosIN")
+      .setSparkRepository[Video]("videosJPRepository", deliveryId = "videosJP")
+      .setSparkRepository[Video]("videosKRRepository", deliveryId = "videosKR")
+      .setSparkRepository[Video]("videosMXRepository", deliveryId = "videosMX")
+      .setSparkRepository[Video]("videosRURepository", deliveryId = "videosRU")
+      .setSparkRepository[Video]("videosUSRepository", deliveryId = "videosUS")
       .setSparkRepository[VideoCountry]("videosRepository")
       .setSparkRepository[VideoStats]("videosStatsRepository")
 
@@ -34,13 +34,13 @@ object App {
       .setInput(0.25, "trendingDaysWeight")
       .setInput(0.1, "likesRatioWeight")
       .setInput(0.05, "commentsWeight")
-      .addStage[VideoFactory]()
+      .addStage[VideoIngestionFactory]()
       .addStage[LatestStatsFactory]()
       .addStage[PopularityScoreFactory]()
       .describe()
 
     pipeline.showDiagram()
-//    pipeline.run()
+    pipeline.run()
 
   }
 
