@@ -1,4 +1,4 @@
-package com.github.joristruong.transformer.videofactorytransformer
+package com.github.joristruong.transformer
 
 import com.github.joristruong.entity.{Video, VideoCountry}
 import com.jcdecaux.setl.transformation.Transformer

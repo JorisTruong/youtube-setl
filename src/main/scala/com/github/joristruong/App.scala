@@ -39,8 +39,11 @@ object App {
       .addStage[PopularityScoreFactory]()
       .describe()
 
+    // Display Diagram
     pipeline.showDiagram()
-    pipeline.run()
+
+    // Run the pipeline
+    //pipeline.run()
 
   }
 

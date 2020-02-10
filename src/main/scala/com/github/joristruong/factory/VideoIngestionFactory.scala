@@ -1,7 +1,7 @@
 package com.github.joristruong.factory
 
 import com.github.joristruong.entity.{Video, VideoCountry}
-import com.github.joristruong.transformer.videofactorytransformer.{AddCountryTransformer, MergeCountryTransformer}
+import com.github.joristruong.transformer.{AddCountryTransformer, MergeCountryTransformer}
 import com.jcdecaux.setl.annotation.Delivery
 import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
