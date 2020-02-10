@@ -8,6 +8,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
 
 class StatsTransformer(videos: Dataset[VideoCountry]) extends Transformer[Dataset[VideoStats]] with HasSparkSession {
+
   import spark.implicits._
 
   var transformedData: Dataset[VideoStats] = _
