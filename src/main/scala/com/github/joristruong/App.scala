@@ -27,13 +27,16 @@ object App {
       .setSparkRepository[VideoCountry]("videosRepository")
       .setSparkRepository[VideoStats]("videosStatsRepository")
 
-    // Register Stages
+    // Instantiate pipeline
     val pipeline = setl
       .newPipeline()
       .setInput(0.5, "viewsWeight")
       .setInput(0.25, "trendingDaysWeight")
       .setInput(0.1, "likesRatioWeight")
       .setInput(0.05, "commentsWeight")
+
+    // Register Stages
+    pipeline
       .addStage[VideoIngestionFactory]()
       .addStage[LatestStatsFactory]()
       .addStage[PopularityScoreFactory]()
