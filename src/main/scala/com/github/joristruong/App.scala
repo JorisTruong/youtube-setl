@@ -24,17 +24,18 @@ object App {
       .setSparkRepository[Video]("videosMXRepository", deliveryId = "videosMXRepo")
       .setSparkRepository[Video]("videosRURepository", deliveryId = "videosRURepo")
       .setSparkRepository[Video]("videosUSRepository", deliveryId = "videosUSRepo")
-      .setSparkRepository[VideoCountry]("videosRepository", deliveryId = "videosRepo")
-      .setSparkRepository[VideoStats]("videosStatsRepository", deliveryId = "videosStatsRepo")
+      .setSparkRepository[VideoCountry]("videosRepository")
+      .setSparkRepository[VideoStats]("videosStatsRepository")
 
     // Register Stages
-    setl
+    val pipeline = setl
       .newPipeline()
       .addStage[VideoFactory]()
       .addStage[LatestStatsFactory]()
       .describe()
-      .run()
-      .showDiagram()
+
+    pipeline.showDiagram()
+    pipeline.run()
 
   }
 

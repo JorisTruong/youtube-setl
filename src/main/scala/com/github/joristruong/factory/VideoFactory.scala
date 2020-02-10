@@ -1,99 +1,56 @@
 package com.github.joristruong.factory
 
 import com.github.joristruong.entity.{Video, VideoCountry}
-import com.github.joristruong.transformer.videofactorytransformer.{AddCountryFactory, MergeCountryFactory}
+import com.github.joristruong.transformer.videofactorytransformer.{AddCountryTransformer, MergeCountryTransformer}
 import com.jcdecaux.setl.annotation.Delivery
 import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
+import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 
-class VideoFactory extends Factory[Dataset[VideoCountry]] {
-  @Delivery(id = "videosCARepo")
-  var videosCARepo: SparkRepository[Video] = _
-  @Delivery(id = "videosDERepo")
-  var videosDERepo: SparkRepository[Video] = _
-  @Delivery(id = "videosFRRepo")
-  var videosFRRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosGBRepo")
-  var videosGBRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosINRepo")
-  var videosINRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosJPRepo")
-  var videosJPRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosKRRepo")
-  var videosKRRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosMXRepo")
-  var videosMXRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosRURepo")
-  var videosRURepo: SparkRepository[Video] = _
-  @Delivery(id = "videosUSRepo")
-  var videosUSRepo: SparkRepository[Video] = _
-  @Delivery(id = "videosRepo")
-  var videosCountryRepo: SparkRepository[VideoCountry] = _
+class VideoFactory extends Factory[Dataset[VideoCountry]] with HasSparkSession {
 
-  var videosCAFull: Dataset[Video] = _
-  var videosDEFull: Dataset[Video] = _
-  var videosFRFull: Dataset[Video] = _
-  var videosGBFull: Dataset[Video] = _
-  var videosINFull: Dataset[Video] = _
-  var videosJPFull: Dataset[Video] = _
-  var videosKRFull: Dataset[Video] = _
-  var videosMXFull: Dataset[Video] = _
-  var videosRUFull: Dataset[Video] = _
-  var videosUSFull: Dataset[Video] = _
+  import spark.implicits._
 
-  var videos: Dataset[Video] = _
+  @Delivery(id = "videosCARepo", autoLoad = true) private[this] val videosCAFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosDERepo", autoLoad = true) private[this] val videosDEFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosFRRepo", autoLoad = true) private[this] val videosFRFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosGBRepo", autoLoad = true) private[this] val videosGBFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosINRepo", autoLoad = true) private[this] val videosINFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosJPRepo", autoLoad = true) private[this] val videosJPFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosKRRepo", autoLoad = true) private[this] val videosKRFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosMXRepo", autoLoad = true) private[this] val videosMXFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosRURepo", autoLoad = true) private[this] val videosRUFull = spark.emptyDataset[Video]
+  @Delivery(id = "videosUSRepo", autoLoad = true) private[this] val videosUSFull = spark.emptyDataset[Video]
 
-  var output: Dataset[VideoCountry] = _
+  @Delivery private[this] val videosCountryRepo = SparkRepository[VideoCountry]
 
-  override def read(): VideoFactory.this.type = {
-    videosCAFull = videosCARepo.findAll()
-    videosDEFull = videosDERepo.findAll()
-    videosFRFull = videosFRRepo.findAll()
-    videosGBFull = videosGBRepo.findAll()
-    videosINFull = videosINRepo.findAll()
-    videosJPFull = videosJPRepo.findAll()
-    videosKRFull = videosKRRepo.findAll()
-    videosMXFull = videosMXRepo.findAll()
-    videosRUFull = videosRURepo.findAll()
-    videosUSFull = videosUSRepo.findAll()
+  private[this] var output: Dataset[VideoCountry] = _
 
-    this
-  }
+  override def read(): VideoFactory.this.type = this
 
   override def process(): VideoFactory.this.type = {
-    val videosCA = new AddCountryFactory(videosCAFull, "CA").transform().transformed
-    val videosDE = new AddCountryFactory(videosDEFull, "DE").transform().transformed
-    val videosFR = new AddCountryFactory(videosFRFull, "FR").transform().transformed
-    val videosGB = new AddCountryFactory(videosGBFull, "GB").transform().transformed
-    val videosIN = new AddCountryFactory(videosINFull, "IN").transform().transformed
-    val videosJP = new AddCountryFactory(videosJPFull, "JP").transform().transformed
-    val videosKR = new AddCountryFactory(videosKRFull, "KR").transform().transformed
-    val videosMX = new AddCountryFactory(videosMXFull, "MX").transform().transformed
-    val videosRU = new AddCountryFactory(videosRUFull, "RU").transform().transformed
-    val videosUS = new AddCountryFactory(videosUSFull, "US").transform().transformed
-
     val allVideos = Seq(
-      videosCA,
-      videosDE,
-      videosFR,
-      videosGB,
-      videosIN,
-      videosJP,
-      videosKR,
-      videosMX,
-      videosRU,
-      videosUS
-    )
+      (videosCAFull, "CA"),
+      (videosDEFull, "DE"),
+      (videosFRFull, "FR"),
+      (videosGBFull, "GB"),
+      (videosINFull, "IN"),
+      (videosJPFull, "JP"),
+      (videosKRFull, "KR"),
+      (videosMXFull, "MX"),
+      (videosRUFull, "RU"),
+      (videosUSFull, "US")
+    ).map {
+      case (data, country) => new AddCountryTransformer(data, country).transform().transformed
+    }
 
-    output = new MergeCountryFactory(allVideos).transform().transformed
-
+    output = new MergeCountryTransformer(allVideos).transform().transformed
     this
   }
 
   override def write(): VideoFactory.this.type = {
     videosCountryRepo.save(output.coalesce(1))
-
     this
   }
 

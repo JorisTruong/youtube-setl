@@ -6,10 +6,8 @@ import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.functions._
 
-class AddCountryFactory(
-                         videosRepo: Dataset[Video],
-                         country: String
-                       ) extends Transformer[Dataset[VideoCountry]] with HasSparkSession {
+class AddCountryTransformer(videosRepo: Dataset[Video],
+                            country: String) extends Transformer[Dataset[VideoCountry]] with HasSparkSession {
 
   import spark.implicits._
 
@@ -17,14 +15,13 @@ class AddCountryFactory(
 
   override def transformed: Dataset[VideoCountry] = transformedData
 
-  override def transform(): AddCountryFactory.this.type = {
+  override def transform(): AddCountryTransformer.this.type = {
     transformedData = videosRepo
-        .filter(video => !video.removed)
-        .drop("removed")
-        .withColumn("country", lit(country))
-        .as[VideoCountry]
-        .distinct()
-
+      .filter(video => !video.removed)
+      .drop("removed")
+      .withColumn("country", lit(country))
+      .as[VideoCountry]
+      .distinct()
     this
   }
 }
