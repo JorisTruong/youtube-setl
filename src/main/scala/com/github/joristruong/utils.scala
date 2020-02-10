@@ -36,5 +36,6 @@ object utils {
       )
       .withColumn("country", lit(region))
       .filter(row => !row.getAs[Boolean]("video_error_or_removed"))
+      .distinct()
   }
 }

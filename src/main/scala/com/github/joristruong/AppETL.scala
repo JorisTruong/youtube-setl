@@ -6,7 +6,7 @@ import org.apache.spark.sql.functions._
 
 import spark.implicits._
 
-object App {
+object AppETL {
 
   def main(args: Array[String]): Unit = {
 
@@ -19,16 +19,16 @@ object App {
     /// READ VIDEOS ///
     ///////////////////
 
-    val CAVideos = readVideo("src/main/resources/CAvideos.csv", "CA")
-    val DEVideos = readVideo("src/main/resources/DEvideos.csv", "DE")
-    val FRVideos = readVideo("src/main/resources/FRvideos.csv", "FR")
-    val GBVideos = readVideo("src/main/resources/GBvideos.csv", "GB")
-    val INVideos = readVideo("src/main/resources/INvideos.csv", "IN")
-    val JPVideos = readVideo("src/main/resources/JPvideos.csv", "JP")
-    val KRVideos = readVideo("src/main/resources/KRvideos.csv", "KR")
-    val MXVideos = readVideo("src/main/resources/MXvideos.csv", "MX")
-    val RUVideos = readVideo("src/main/resources/RUvideos.csv", "RU")
-    val USVideos = readVideo("src/main/resources/USvideos.csv", "US")
+    val CAVideos = readVideo("src/main/resources/inputs/videos/CAvideos.csv", "CA").cache()
+    val DEVideos = readVideo("src/main/resources/inputs/videos/DEvideos.csv", "DE").cache()
+    val FRVideos = readVideo("src/main/resources/inputs/videos/FRvideos.csv", "FR").cache()
+    val GBVideos = readVideo("src/main/resources/inputs/videos/GBvideos.csv", "GB").cache()
+    val INVideos = readVideo("src/main/resources/inputs/videos/INvideos.csv", "IN").cache()
+    val JPVideos = readVideo("src/main/resources/inputs/videos/JPvideos.csv", "JP").cache()
+    val KRVideos = readVideo("src/main/resources/inputs/videos/KRvideos.csv", "KR").cache()
+    val MXVideos = readVideo("src/main/resources/inputs/videos/MXvideos.csv", "MX").cache()
+    val RUVideos = readVideo("src/main/resources/inputs/videos/RUvideos.csv", "RU").cache()
+    val USVideos = readVideo("src/main/resources/inputs/videos/USvideos.csv", "US").cache()
 
     val videos = Seq(
       CAVideos,
@@ -116,7 +116,7 @@ object App {
         "score"
       )
 
-    score.show(100, false)
+    score.show(1000, false)
   }
 
 }
