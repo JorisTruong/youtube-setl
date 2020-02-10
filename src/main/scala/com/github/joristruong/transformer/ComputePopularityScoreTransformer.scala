@@ -1,24 +1,23 @@
 package com.github.joristruong.transformer
 
-import com.github.joristruong.entity.VideoStats
+import com.github.joristruong.entity.{VideoScore, VideoStats}
 import com.jcdecaux.setl.transformation.Transformer
 import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.functions._
 
-class ComputePopularityScoreTransformer(
-                                         videosStats: Dataset[VideoStats],
-                                         viewsWeight: Double,
-                                         trendingDaysWeight: Double,
-                                         likesRatioWeight: Double,
-                                         commentsWeight: Double
-                                       ) extends Transformer[Dataset[VideoStats]] with HasSparkSession {
+class ComputePopularityScoreTransformer(videosStats: Dataset[VideoStats],
+                                        viewsWeight: Double,
+                                        trendingDaysWeight: Double,
+                                        likesRatioWeight: Double,
+                                        commentsWeight: Double
+                                       ) extends Transformer[Dataset[VideoScore]] with HasSparkSession {
 
   import spark.implicits._
 
-  var transformedData: Dataset[VideoStats] = _
+  var transformedData: Dataset[VideoScore] = _
 
-  override def transformed: Dataset[VideoStats] = transformedData
+  override def transformed: Dataset[VideoScore] = transformedData
 
   override def transform(): ComputePopularityScoreTransformer.this.type = {
     val normalizedLikeDislike = videosStats
@@ -52,16 +51,10 @@ class ComputePopularityScoreTransformer(
         "title",
         "channelTitle",
         "categoryId",
-        "trendingDate",
-        "views",
-        "likes",
-        "dislikes",
-        "commentCount",
-        "commentDisabled",
         "country",
-        "trendingDays"
+        "score"
       )
-      .as[VideoStats]
+      .as[VideoScore]
 
     this
   }

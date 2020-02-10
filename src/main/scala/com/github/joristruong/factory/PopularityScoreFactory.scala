@@ -1,34 +1,27 @@
 package com.github.joristruong.factory
 
-import com.github.joristruong.entity.VideoStats
+import com.github.joristruong.entity.{VideoScore, VideoStats}
 import com.github.joristruong.transformer.ComputePopularityScoreTransformer
 import com.jcdecaux.setl.annotation.Delivery
-import com.jcdecaux.setl.storage.repository.SparkRepository
 import com.jcdecaux.setl.transformation.Factory
+import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 
-class PopularityScoreFactory extends Factory[Dataset[VideoStats]] {
+class PopularityScoreFactory extends Factory[Dataset[VideoScore]] with HasSparkSession {
 
-  @Delivery(id = "videosStatsRepo")
-  var videosStatsRepo: SparkRepository[VideoStats] = _
-  @Delivery(id = "viewsWeight")
-  var viewsWeight: Double = _
-  @Delivery(id = "trendingDaysWeight")
-  var trendingDaysWeight: Double = _
-  @Delivery(id = "likesRatioWeight")
-  var likesWeight: Double = _
-  @Delivery(id = "commentsWeight")
-  var commentsWeight: Double = _
+  import spark.implicits._
 
-  var videosStats: Dataset[VideoStats] = _
+  @Delivery(id = "viewsWeight") private[this] val viewsWeight: Double = 0D
+  @Delivery(id = "trendingDaysWeight") private[this] val trendingDaysWeight: Double = 0D
+  @Delivery(id = "likesRatioWeight") private[this] val likesWeight: Double = 0D
+  @Delivery(id = "commentsWeight") private[this] val commentsWeight: Double = 0D
 
-  var output: Dataset[VideoStats] = _
+  @Delivery(autoLoad = true)
+  private[this] val videosStats = spark.emptyDataset[VideoStats]
 
-  override def read(): PopularityScoreFactory.this.type = {
-    videosStats = videosStatsRepo.findAll()
+  private[this] var output: Dataset[VideoScore] = _
 
-    this
-  }
+  override def read(): PopularityScoreFactory.this.type = this
 
   override def process(): PopularityScoreFactory.this.type = {
     output = new ComputePopularityScoreTransformer(
@@ -39,12 +32,13 @@ class PopularityScoreFactory extends Factory[Dataset[VideoStats]] {
       commentsWeight
     ).transform().transformed
 
-    output.show(1000)
-
     this
   }
 
-  override def write(): PopularityScoreFactory.this.type = this
+  override def write(): PopularityScoreFactory.this.type = {
+    output.show()
+    this
+  }
 
-  override def get(): Dataset[VideoStats] = output
+  override def get(): Dataset[VideoScore] = output
 }

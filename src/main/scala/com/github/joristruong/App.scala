@@ -1,7 +1,7 @@
 package com.github.joristruong
 
 import com.github.joristruong.entity.{Video, VideoCountry, VideoStats}
-import com.github.joristruong.factory.{LatestStatsFactory, VideoFactory}
+import com.github.joristruong.factory.{LatestStatsFactory, PopularityScoreFactory, VideoFactory}
 import com.jcdecaux.setl.Setl
 
 object App {
@@ -30,12 +30,17 @@ object App {
     // Register Stages
     val pipeline = setl
       .newPipeline()
+      .setInput(0.5, "viewsWeight")
+      .setInput(0.25, "trendingDaysWeight")
+      .setInput(0.1, "likesRatioWeight")
+      .setInput(0.05, "commentsWeight")
       .addStage[VideoFactory]()
       .addStage[LatestStatsFactory]()
+      .addStage[PopularityScoreFactory]()
       .describe()
 
     pipeline.showDiagram()
-    pipeline.run()
+//    pipeline.run()
 
   }
 
