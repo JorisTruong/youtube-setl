@@ -6,11 +6,11 @@ import com.jcdecaux.setl.util.HasSparkSession
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.functions._
 
-class ComputePopularityScoreTransformer(videosStats: Dataset[VideoStats],
-                                        viewsWeight: Double,
-                                        trendingDaysWeight: Double,
-                                        likesRatioWeight: Double,
-                                        commentsWeight: Double
+class PopularityScoreTransformer(videosStats: Dataset[VideoStats],
+                                 viewsWeight: Double,
+                                 trendingDaysWeight: Double,
+                                 likesRatioWeight: Double,
+                                 commentsWeight: Double
                                        ) extends Transformer[Dataset[VideoScore]] with HasSparkSession {
 
   import spark.implicits._
@@ -19,7 +19,7 @@ class ComputePopularityScoreTransformer(videosStats: Dataset[VideoStats],
 
   override def transformed: Dataset[VideoScore] = transformedData
 
-  override def transform(): ComputePopularityScoreTransformer.this.type = {
+  override def transform(): PopularityScoreTransformer.this.type = {
     val normalizedLikeDislike = videosStats
       .withColumn("normalizedLikes", $"likes" / $"views")
       .withColumn("normalizedDislikes", $"dislikes" / $"views")
