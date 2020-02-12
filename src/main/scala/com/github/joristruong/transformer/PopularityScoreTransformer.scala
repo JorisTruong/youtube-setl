@@ -11,7 +11,7 @@ class PopularityScoreTransformer(videosStats: Dataset[VideoStats],
                                  trendingDaysWeight: Double,
                                  likesRatioWeight: Double,
                                  commentsWeight: Double
-                                       ) extends Transformer[Dataset[VideoScore]] with HasSparkSession {
+                                ) extends Transformer[Dataset[VideoScore]] with HasSparkSession {
 
   import spark.implicits._
 

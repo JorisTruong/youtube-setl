@@ -46,7 +46,7 @@ object App {
     pipeline.showDiagram()
 
     // Run the pipeline
-    //pipeline.run()
+    pipeline.run()
 
   }
 
