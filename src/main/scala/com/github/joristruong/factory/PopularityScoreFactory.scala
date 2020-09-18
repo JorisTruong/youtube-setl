@@ -19,6 +19,8 @@ class PopularityScoreFactory extends Factory[Dataset[VideoStats]] {
   var likesWeight: Double = _
   @Delivery(id = "commentsWeight")
   var commentsWeight: Double = _
+  @Delivery(id = "sortedVideosStatsRepo")
+  var sortedVideosStatsRepo: SparkRepository[VideoStats] = _
 
   var videosStats: Dataset[VideoStats] = _
 
@@ -39,12 +41,14 @@ class PopularityScoreFactory extends Factory[Dataset[VideoStats]] {
       commentsWeight
     ).transform().transformed
 
-    output.show(1000)
-
     this
   }
 
-  override def write(): PopularityScoreFactory.this.type = this
+  override def write(): PopularityScoreFactory.this.type = {
+    sortedVideosStatsRepo.save(output.coalesce(1))
+
+    this
+  }
 
   override def get(): Dataset[VideoStats] = output
 }
