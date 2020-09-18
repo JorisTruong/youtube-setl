@@ -353,7 +353,7 @@ For this project, we assume that you already have a basic knowledge of Scala and
   1. <details>
         <summary>Configuration</summary>
 
-        Set the configuration file to retrieve the output the ```VideoFactory```. You will need to read it and process it to get the latest videos statistics.
+        The configuration file for the output of ```VideoFactory``` is already set in the previous achievement so it can be saved. You will need to read it and process it to get the latest videos statistics.
 
         <details>
         <summary>Tips</summary>
@@ -375,6 +375,13 @@ For this project, we assume that you already have a basic knowledge of Scala and
         <summary>Factory</summary>
 
         In this factory, all you need to do is to read the input, pass it to the ```Transformer``` that will do the data processing, and write the output. It should be pretty simple ; you can try to imitate the other ```Factories```.
+
+        <details>
+        <summary>Tips</summary>
+
+        * Do not forget to set the inputs and outputs ```Deliverable```.
+
+        </details>
 
         </details>
 
@@ -403,31 +410,57 @@ For this project, we assume that you already have a basic knowledge of Scala and
 * <details>
   <summary>Achievement 3: <b>Computing the popularity score</b></summary>
   
+  We are now going to compute the popularity score of each video, after getting their latest statistics. As said previously, our formula is very simple and may not represent the reality. Let's remind that the formula is ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * likesWeight + normalizedComments * commentsWeight```. Using the previous result of ```VideoStats```, we are simply going to apply the formula, and sort the data by the highest score to the lowest.
+  
   1. <details>
         <summary>Configuration</summary>
 
-
+        This is the last data transformation. Set the configuration so that you can save this last ```Dataset[VideoStats]```. 
 
         </details>
         
   2. <details>
         <summary>Entity</summary>
 
-        
+        No entity will be needed here. We will simply sort the previous data and drop the columns used for computing to score so that we can still use the ```VideoStats``` entity.
 
         </details>
 
   3. <details>
         <summary>Factory</summary>
 
+        In this factory, all you need to do is to read the input, pass it to the ```Transformer``` that will do the data processing, and write the output. It should be pretty simple ; you can try to imitate the other ```Factories```.
         
+        <details>
+        <summary>Tips</summary>
+
+        * Do not forget to set the inputs and outputs ```Deliverable```.
+
+        </details>
 
         </details>
 
   4. <details>
         <summary>Transformer</summary>
 
-        
+        1. Let's normalize the number of likes/dislikes over the number of views. For each record, divide the number of likes by the number of views, and then the number of dislikes by the number of views. After that, get the percentage of "normalized" likes.
+        2. Let's now normalize the number of comments. For each record, divide the number of comments by the number of views.
+        3. We can now compute the popularity score. Remind that the formula is: ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * likesWeight + normalizedComments * commentsWeight```. <br>
+         However, there are videos where comments are disabled. In this case, the formula becomes: ```views * viewsWeight + trendingDays * trendingDaysWeight + normalizedLikesPercentage * (likesWeight + commentsWeight)```. We arbitrarily decided the weights to be:
+            * ```viewsWeight = 0.4```
+            * ```trendingDaysWeight = 0.35```
+            * ```likesWeight = 0.2```
+            * ```commentsWeight = 0.05```
+    
+            Set them up as ```Input``` so they can be easily modified.
+    
+            <details><summary>Tips:</summary>
+    
+            * Check out ```when``` and ```otherwise``` functions from ```org.apache.spark.sql.functions```.
+    
+            </details>
+          
+        4. Sort by the ```score``` in descending order, and take the 100 first records. You now have the 100 most "popular" videos from the 10 regions.
 
         </details>
 
