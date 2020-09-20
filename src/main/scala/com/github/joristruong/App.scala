@@ -8,5 +8,15 @@ object App {
       .withDefaultConfigLoader()
       .getOrCreate()
 
+    setl
+    //.setConnector(???)
+    //.setSparkRepository[???](???)
+
+
+    setl
+      .newPipeline()
+      //.setInput(???)
+      .run()
+
   }
 }
