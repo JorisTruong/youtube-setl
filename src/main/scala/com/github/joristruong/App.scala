@@ -1,5 +1,7 @@
 package com.github.joristruong
 
+import com.github.joristruong.entity.Category
+import com.github.joristruong.factory.CategoryFactory
 import com.jcdecaux.setl.Setl
 
 object App {
@@ -9,13 +11,13 @@ object App {
       .getOrCreate()
 
     setl
-    //.setConnector(???)
-    //.setSparkRepository[???](???)
-
+      .setConnector("categoriesReadConnector", deliveryId = "categoriesReadConn")
+      .setSparkRepository[Category]("categoriesWriteRepository", deliveryId = "categoriesWriteRepo")
 
     setl
       .newPipeline()
-      //.setInput(???)
+      //.setInput[???](???)
+      .addStage[CategoryFactory]()
       .run()
 
   }
